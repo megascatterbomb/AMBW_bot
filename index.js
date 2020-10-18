@@ -35,6 +35,7 @@ module.exports = {
     }
 }
 
+// Reads a file in the same dir as index.js containing the key
 key = require('fs').readFileSync("./key.txt")
 
 client.login(key);
