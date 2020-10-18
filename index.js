@@ -36,9 +36,7 @@ module.exports = {
 }
 
 // Reads a file in the same dir as index.js containing the key
-key = require('fs').readFileSync("./key.txt")
-
+buffer = require('fs').readFileSync("./key.txt", {encoding: 'utf-8'});
+key = buffer.toString();
 client.login(key);
-
-key = "garbage"
 
