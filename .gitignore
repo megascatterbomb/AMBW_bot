@@ -1,5 +1,2 @@
 key.txt
-commands\tempdir\dlss_image-out.png
-commands\tempdir\dlss_image.png
-commands\tempdir\dlss_image-out.jpg
-commands\tempdir\dlss_image.jpg
+commands/tempdir/*
