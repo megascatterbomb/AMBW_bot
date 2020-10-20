@@ -4,6 +4,7 @@ commandList.set("dlss", "dlss");
 commandList.set("acir", "acir");
 commandList.set("upscale", "dlss");
 commandList.set("seymour", "seymour");
+commandList.set("care", "care");
 
 const prefix = 'a.';
 
