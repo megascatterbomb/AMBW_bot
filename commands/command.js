@@ -6,6 +6,7 @@ commandList.set("upscale", "dlss");
 commandList.set("seymour", "seymour");
 commandList.set("care", "care");
 commandList.set("fishy", "fishy");
+commandList.set("restart", "restart");
 
 const prefix = 'a.';
 
