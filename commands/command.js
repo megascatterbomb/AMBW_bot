@@ -5,6 +5,7 @@ commandList.set("acir", "acir");
 commandList.set("upscale", "dlss");
 commandList.set("seymour", "seymour");
 commandList.set("care", "care");
+commandList.set("fishy", "fishy");
 
 const prefix = 'a.';
 
