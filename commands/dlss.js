@@ -30,7 +30,7 @@ function command(message, args) {
     var scalefactor = 2;
     if(args[0]) {
         scalefactor = args.slice(-1);
-        if(scalefactor > 8) {
+        if(scalefactor > 8 && message.author.id != 193950601271443456) {
             scalefactor = 8;
             message.channel.send("Using maximum scale-factor of 8.");
         }
@@ -57,7 +57,16 @@ function command(message, args) {
                 message.channel.send(err.toString());
                 return;
             }
+            fileSize = fs.statSync(fileName + "-out." + extension).size / 1000000.0;
+            if(fileSize >= 8 && fileSize < 50) {
+                message.channel.send("Output image is greater than 8 MB. Image will not send unless you are on a level 2 boosted discord server.");
+            } else if (fileSize >= 50 && fileSize < 100) {
+                message.channel.send("Output image is greater than 50 MB. Image will not send unless you are on a level 3 boosted discord server.");
+            } else if (filesize >= 100) {
+                message.channel.send("Output image is greater than 100 MB. Image will not send.");
+            }
             outputImage = fs.readFileSync(fileName + "-out." + extension);
+            if(fs.statSync(fileName + "-out." + extension).size / 100)
             message.channel.send("", {files: [fileName + "-out." + extension]});
         }));
 }
