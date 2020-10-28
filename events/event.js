@@ -13,7 +13,7 @@ module.exports = {
                 events.push("acirsparkle");
             }
             const ngiaSubstrings = ["ngia", "software engineering direction",
-            "software engineering program direction", "software engineering programme direction"];
+            "software engineering program direction", "software engineering programme direction", "se program directive"];
             if(ngiaSubstrings.some(s => message.content.toLowerCase().includes(s))) {
                 events.push("ngia");
             }
