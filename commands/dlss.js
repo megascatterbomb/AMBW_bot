@@ -50,7 +50,9 @@ function command(message, args) {
             console.log("Image recieved. Scaling to " + scalefactor + "x resolution (" + (image.width * scalefactor).toString() + "x"
             + (image.height * scalefactor).toString()  + ")");
             try {
-                Waifu2x.upscaleImage(fileName + "." + extension, fileName + "-out." + extension);
+                Waifu2x.upscaleImage(fileName + "." + extension, fileName + "-out." + extension, {
+                    scale: scalefactor
+                });
             } catch(err) {
                 message.channel.send(err.toString());
                 return;
