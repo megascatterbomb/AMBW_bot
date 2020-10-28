@@ -7,6 +7,11 @@ commandList.set("seymour", "seymour");
 commandList.set("care", "care");
 commandList.set("fishy", "fishy");
 commandList.set("restart", "restart");
+commandList.set("specs", "specs");
+commandList.set("spec", "specs");
+commandList.set("hardware", "specs");
+commandList.set("host", "specs");
+commandList.set("hostinfo", "specs");
 
 const prefix = 'a.';
 

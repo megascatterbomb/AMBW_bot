@@ -8,6 +8,7 @@
     "fs": "0.0.1-security",
     "node-fetch": "^2.6.1",
     "request": "^2.88.2",
+    "systeminformation": "^4.27.11",
     "waifu2x": "^0.1.5"
   },
   "devDependencies": {},
