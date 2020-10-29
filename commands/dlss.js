@@ -3,10 +3,10 @@ const fetcher = require('node-fetch');
 const request = require('request');
 const fs = require("fs");
 const { default: Waifu2x } = require("waifu2x");
-const { Message } = require("discord.js");
+const { Message, DiscordAPIError } = require("discord.js");
 const resolve = require("path").resolve;
 
-function command(message, args) {
+async function command(message, args) {
 
     attachments = message.attachments;
     if(attachments.size == 0) {
@@ -44,8 +44,8 @@ function command(message, args) {
 
     request.get(image.url)
         .on('error', console.error)
-        .pipe(fs.createWriteStream(fileName + "." + extension).on("close", () => {
-            message.channel.send("Image recieved. Scaling to " + scalefactor + "x resolution (" + (image.width * scalefactor).toString() + "x"
+        .pipe(fs.createWriteStream(fileName + "." + extension).on("close", async function(){
+            await message.channel.send("Image recieved. Scaling to " + scalefactor + "x resolution (" + (image.width * scalefactor).toString() + "x"
                             + (image.height * scalefactor).toString()  + ")");
             console.log("Image recieved. Scaling to " + scalefactor + "x resolution (" + (image.width * scalefactor).toString() + "x"
             + (image.height * scalefactor).toString()  + ")");
@@ -58,16 +58,20 @@ function command(message, args) {
                 return;
             }
             fileSize = fs.statSync(fileName + "-out." + extension).size / 1000000.0;
-            if(fileSize >= 8 && fileSize < 50) {
-                message.channel.send("Output image is greater than 8 MB. Image will not send unless you are on a level 2 boosted discord server.");
-            } else if (fileSize >= 50 && fileSize < 100) {
-                message.channel.send("Output image is greater than 50 MB. Image will not send unless you are on a level 3 boosted discord server.");
-            } else if (filesize >= 100) {
+            if (filesize >= 100) {
                 message.channel.send("Output image is greater than 100 MB. Image will not send.");
+                return;
+            } else {
+                message.channel.send("Upscaling completed, attempting to upload "+ fileSize.toFixed(2) + "MB...");
             }
             outputImage = fs.readFileSync(fileName + "-out." + extension);
             if(fs.statSync(fileName + "-out." + extension).size / 100)
-            message.channel.send("", {files: [fileName + "-out." + extension]});
+            message.channel.send("", {files: [fileName + "-out." + extension]}).catch(error => {
+                console.log("Output image was too large.");
+                if(error['code'] === 40005) {
+                    message.channel.send("Image was too large to output.");
+                }
+            });
         }));
 }
 
