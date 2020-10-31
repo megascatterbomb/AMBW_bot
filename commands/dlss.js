@@ -58,14 +58,13 @@ async function command(message, args) {
                 return;
             }
             fileSize = fs.statSync(fileName + "-out." + extension).size / 1000000.0;
-            if (filesize >= 100) {
+            if (fileSize >= 100) {
                 message.channel.send("Output image is greater than 100 MB. Image will not send.");
                 return;
             } else {
                 message.channel.send("Upscaling completed, attempting to upload "+ fileSize.toFixed(2) + "MB...");
             }
-            outputImage = fs.readFileSync(fileName + "-out." + extension);
-            if(fs.statSync(fileName + "-out." + extension).size / 100)
+            outputImage = fs.readFileSync(fileName + "-out." + extension); 
             message.channel.send("", {files: [fileName + "-out." + extension]}).catch(error => {
                 console.log("Output image was too large.");
                 if(error['code'] === 40005) {
