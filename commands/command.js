@@ -34,7 +34,7 @@ module.exports = {
             }
         } catch(err) {
             message.channel.send("An error occured while executing the command.\n`" + err + "`");
-            if(message.author.id == 193950601271443456) {
+            if(this.restrictToBotOwner(message)) {
                 message.author.send("Stack trace from your command:```\n" + err.stack + "\n```");
             }
             
