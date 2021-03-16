@@ -2,7 +2,7 @@
   "name": "DiscordBot2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/megascatterbomb/AMBW_bot#readme",
   "dependencies": {
-    "@frasermcc/overcord": "^0.1.1"
+    "@frasermcc/overcord": "^0.1.1",
+    "@types/node": "^14.14.35",
+    "dotenv": "^8.2.0"
   }
 }
