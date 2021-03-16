@@ -14,7 +14,6 @@ import { Message } from "discord.js";
 
 @Alias("acir")
 @Inhibit({ limitBy: "USER", maxUsesPerPeriod: 3, periodDuration: 10 })
-@Permit("ADMINISTRATOR")
 export default class TestCommand extends Command {
     async execute(message: Message, client: Client) {
 

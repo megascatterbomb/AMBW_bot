@@ -7,19 +7,32 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const overcord_1 = require("@frasermcc/overcord");
+const si = require('systeminformation');
 let TestCommand = class TestCommand extends overcord_1.Command {
     async execute(message, client) {
-        let acirUserID = "357675387678883840";
-        if (message.author.id == acirUserID) {
-            message.channel.send("Oi <@" + acirUserID + "> fuck off this command is private property");
-            return;
-        }
-        message.channel.send("acir shut the fuck up");
+        const si = require('systeminformation');
+        await si.cpu(function (data) {
+            let info = "";
+            info += ('CPU Information:');
+            info += ('\n' + data.manufacturer + " " + data.brand + " @" + data.speed + "GHz "
+                + data.physicalCores + "C/" + data.cores + "T");
+            message.channel.send(info);
+        });
+        await si.graphics(function (data) {
+            let info = "";
+            info += ('GPU Information:');
+            data.controllers.forEach(function (controller) {
+                info += "\n" + controller.model;
+                +" " + Math.round(controller.vram / 1024).toString() + "GB";
+                // VRAM can't display above 4GB.
+            });
+            message.channel.send(info);
+        });
     }
 };
 TestCommand = __decorate([
-    overcord_1.Alias("acir"),
+    overcord_1.Alias("specs"),
     overcord_1.Inhibit({ limitBy: "USER", maxUsesPerPeriod: 3, periodDuration: 10 })
 ], TestCommand);
 exports.default = TestCommand;
-//# sourceMappingURL=acir.js.map
+//# sourceMappingURL=specs.js.map
