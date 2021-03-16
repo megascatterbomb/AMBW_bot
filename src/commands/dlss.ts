@@ -19,7 +19,7 @@ const { default: Waifu2x } = require("waifu2x");
 @Alias("dlss", "upscale")
 @Inhibit({ limitBy: "USER", maxUsesPerPeriod: 1, periodDuration: 10 })
 export default class TestCommand extends Command {
-    @Argument({ type: new IntegerType(), validate: (n) => n <= 8 && n >= 0.1 })
+    @Argument({ type: new IntegerType(), validate: (n) => n <= 8 && n >= 2 })
     scaleFactor!: number;
     async execute(message: Message, client: Client) {
         let attachments = message.attachments;

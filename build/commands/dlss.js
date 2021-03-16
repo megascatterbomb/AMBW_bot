@@ -80,7 +80,7 @@ let TestCommand = class TestCommand extends overcord_1.Command {
     }
 };
 __decorate([
-    overcord_1.Argument({ type: new overcord_1.IntegerType(), validate: (n) => n <= 8 && n >= 0.1 }),
+    overcord_1.Argument({ type: new overcord_1.IntegerType(), validate: (n) => n <= 8 && n >= 2 }),
     __metadata("design:type", Number)
 ], TestCommand.prototype, "scaleFactor", void 0);
 TestCommand = __decorate([
