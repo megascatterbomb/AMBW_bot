@@ -22,8 +22,7 @@ let TestCommand = class TestCommand extends overcord_1.Command {
             let info = "";
             info += ('GPU Information:');
             data.controllers.forEach(function (controller) {
-                info += "\n" + controller.model;
-                +" " + Math.round(controller.vram / 1024).toString() + "GB";
+                info += "\n" + controller.model; //+ " " + Math.round(controller.vram/1024).toString() + "GB";
                 // VRAM can't display above 4GB.
             });
             message.channel.send(info);
