@@ -13,10 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const overcord_1 = require("@frasermcc/overcord");
-const compressorjs_1 = __importDefault(require("compressorjs"));
 const request = require('request');
 const fs_1 = __importDefault(require("fs"));
 const { default: Waifu2x } = require("waifu2x");
+const imageMin = require("imagemin-overwrite");
+const imageminJpegtran = require('imagemin-jpegtran');
+const imageminPngquant = require('imagemin-pngquant');
 let TestCommand = class TestCommand extends overcord_1.Command {
     async execute(message, client) {
         let attachments = message.attachments;
@@ -58,31 +60,25 @@ let TestCommand = class TestCommand extends overcord_1.Command {
             message.channel.send(err.toString());
             return;
         }
-        let fileSize = fs_1.default.statSync(outFile).size / 1000000.0;
-        if (fileSize >= 100) {
-            message.channel.send("Output image is greater than 100 MB. Image will not send.");
-            return;
-        }
-        else {
-            message.channel.send("Upscaling completed, attempting to upload " + fileSize.toFixed(2) + "MB...");
-        }
+        let fileSize = (fs_1.default.statSync(outFile).size / 1000000.0).toFixed(2);
+        message.channel.send("Upscaling completed, attempting to upload " + fileSize + "MB...");
         let uploadAttempts = 0;
-        while (uploadAttempts < 5) {
+        while (true) {
             uploadAttempts++;
             try {
                 await message.channel.send("", { files: [outFile] });
             }
             catch (error) {
-                if (error['code'] === 40005) {
-                    message.channel.send("Image was too large to output. Compressing...");
-                    let uncompressedImage = new File([], outFile);
-                    let compressedImage = new compressorjs_1.default(uncompressedImage, {
-                        convertSize: 50000000,
-                        maxHeight: 12000,
-                        maxWidth: 12000,
-                        success: (result) => {
-                            fs_1.default.createWriteStream(outFile);
-                        }
+                if (error['code'] === 40005 && uploadAttempts < 5) {
+                    fileSize = (fs_1.default.statSync(outFile).size / 1000000.0).toFixed(2);
+                    await message.channel.send("Image was too large to output (" + fileSize + "MB). Compressing... (Attempt " + uploadAttempts + "/5)");
+                    const files = await imageMin([outFile], {
+                        plugins: [
+                            imageminJpegtran(),
+                            imageminPngquant({
+                                quality: [0.3, 0.75]
+                            })
+                        ]
                     });
                     continue;
                 }
