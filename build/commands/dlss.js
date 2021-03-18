@@ -8,10 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const overcord_1 = require("@frasermcc/overcord");
+const compressorjs_1 = __importDefault(require("compressorjs"));
 const request = require('request');
-const fs = require("fs");
+const fs_1 = __importDefault(require("fs"));
 const { default: Waifu2x } = require("waifu2x");
 let TestCommand = class TestCommand extends overcord_1.Command {
     async execute(message, client) {
@@ -38,13 +42,15 @@ let TestCommand = class TestCommand extends overcord_1.Command {
         message.channel.send("Downloading image...");
         let date = Date.now().toString();
         let fileName = "./workingdir/dlss_image_" + date;
+        let inFile = fileName + "." + extension;
+        let outFile = fileName + "-out." + extension;
         await request.get(image.url)
             .on('error', console.error)
-            .pipe(fs.createWriteStream(fileName + "." + extension));
+            .pipe(fs_1.default.createWriteStream(inFile));
         await message.channel.send("Image recieved. Scaling to " + scalefactor + "x resolution (" + (image.width * scalefactor).toString() + "x"
             + (image.height * scalefactor).toString() + ")");
         try {
-            await Waifu2x.upscaleImage(fileName + "." + extension, fileName + "-out." + extension, {
+            await Waifu2x.upscaleImage(inFile, outFile, {
                 scale: scalefactor
             });
         }
@@ -52,7 +58,7 @@ let TestCommand = class TestCommand extends overcord_1.Command {
             message.channel.send(err.toString());
             return;
         }
-        let fileSize = fs.statSync(fileName + "-out." + extension).size / 1000000.0;
+        let fileSize = fs_1.default.statSync(outFile).size / 1000000.0;
         if (fileSize >= 100) {
             message.channel.send("Output image is greater than 100 MB. Image will not send.");
             return;
@@ -60,14 +66,35 @@ let TestCommand = class TestCommand extends overcord_1.Command {
         else {
             message.channel.send("Upscaling completed, attempting to upload " + fileSize.toFixed(2) + "MB...");
         }
-        let outputImage = fs.readFileSync(fileName + "-out." + extension);
-        await message.channel.send("", { files: [fileName + "-out." + extension] }).catch(error => {
-            if (error['code'] === 40005) {
-                message.channel.send("Image was too large to output.");
+        let uploadAttempts = 0;
+        while (uploadAttempts < 5) {
+            uploadAttempts++;
+            try {
+                await message.channel.send("", { files: [outFile] });
             }
-        });
-        fs.unlinkSync(fileName + "-out." + extension);
-        fs.unlinkSync(fileName + "." + extension);
+            catch (error) {
+                if (error['code'] === 40005) {
+                    message.channel.send("Image was too large to output. Compressing...");
+                    let uncompressedImage = new File([], outFile);
+                    let compressedImage = new compressorjs_1.default(uncompressedImage, {
+                        convertSize: 50000000,
+                        maxHeight: 12000,
+                        maxWidth: 12000,
+                        success: (result) => {
+                            fs_1.default.createWriteStream(outFile);
+                        }
+                    });
+                    continue;
+                }
+                else {
+                    message.channel.send("Upload failed. Operation cancelled.");
+                    break;
+                }
+            }
+            break;
+        }
+        fs_1.default.unlinkSync(outFile);
+        fs_1.default.unlinkSync(inFile);
     }
 };
 __decorate([
