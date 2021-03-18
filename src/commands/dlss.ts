@@ -78,7 +78,7 @@ export default class TestCommand extends Command {
             try {
                 await message.channel.send("", {files: [outFile]});
             } catch (error) {
-                if(error['code'] === 40005 && uploadAttempts < 5) {
+                if(error['code'] === 40005 && uploadAttempts <= 5) {
                     fileSize = (fs.statSync(outFile).size / 1000000.0).toFixed(2);
                     await message.channel.send("Image was too large to output ("+fileSize+"MB). Compressing... (Attempt "+uploadAttempts+"/5)");
                     
