@@ -64,21 +64,16 @@ let TestCommand = class TestCommand extends overcord_1.Command {
         message.channel.send("Upscaling completed, attempting to upload " + fileSize + "MB...");
         let uploadAttempts = 0;
         while (true) {
-            uploadAttempts++;
             try {
                 await message.channel.send("", { files: [outFile] });
             }
             catch (error) {
-                if (error['code'] === 40005 && uploadAttempts < 5) {
+                uploadAttempts++;
+                if (error['code'] === 40005 && uploadAttempts <= 5 && scalefactor - uploadAttempts >= 2) {
                     fileSize = (fs_1.default.statSync(outFile).size / 1000000.0).toFixed(2);
-                    await message.channel.send("Image was too large to output (" + fileSize + "MB). Compressing... (Attempt " + uploadAttempts + "/5)");
-                    const files = await imageMin([outFile], {
-                        plugins: [
-                            imageminJpegtran(),
-                            imageminPngquant({
-                                quality: [0.3, 0.75]
-                            })
-                        ]
+                    message.channel.send("Image was too large to output (" + fileSize + "MB). Retrying with scale factor of " + (scalefactor - uploadAttempts));
+                    await Waifu2x.upscaleImage(inFile, outFile, {
+                        scale: (scalefactor - uploadAttempts)
                     });
                     continue;
                 }
