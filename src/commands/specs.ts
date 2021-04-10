@@ -33,6 +33,9 @@ export default class TestCommand extends Command {
         await si.graphics(function(data: Systeminformation.GraphicsData) {
             let info: string = "";
             info += ('GPU Information:');
+            if (data.controllers.length == 0) {
+                info += " Not available (Likely running in Docker instance)"
+            }
             data.controllers.forEach(function(controller) {
                 info += "\n" + controller.model; //+ " " + Math.round(controller.vram/1024).toString() + "GB";
                 // VRAM can't display above 4GB.
