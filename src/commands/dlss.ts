@@ -18,6 +18,7 @@ const { default: Waifu2x } = require("waifu2x");
 const imageMin = require("imagemin-overwrite");
 const imageminJpegtran = require('imagemin-jpegtran');
 const imageminPngquant = require('imagemin-pngquant');
+import { Systeminformation } from "systeminformation";
 
 @Alias("dlss", "upscale")
 @Inhibit({ limitBy: "USER", maxUsesPerPeriod: 1, periodDuration: 10 })
@@ -25,6 +26,22 @@ export default class TestCommand extends Command {
     @Argument({ type: new IntegerType(), validate: (n: number) => n <= 8 && n >= 2 })
     scaleFactor!: number;
     async execute(message: Message, client: Client) {
+        // Check if a GPU is present. If not, we're likely running in a docker environment so we shouldnt execute.
+        let isDocker = false;
+        const si = require('systeminformation');
+        await si.graphics(function(data: Systeminformation.GraphicsData) {
+            let info: string = "";
+            data.controllers.forEach(function(controller) {
+                info += "\n" + controller.model; //+ " " + Math.round(controller.vram/1024).toString() + "GB";
+                // VRAM can't display above 4GB.
+            });
+            isDocker = info == "";
+        });
+        if (isDocker) {
+            message.channel.send("DLSS is disabled when running from a docker instance.");
+            return;
+        }
+
         let attachments = message.attachments;
         if(attachments.size == 0) {
             message.channel.send("You must attach a single image to use this function (set the caption to a.dlss <scale>)");

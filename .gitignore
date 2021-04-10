@@ -1,4 +1,5 @@
 node_modules/
 workingdir/
 log/
+ambwbot_image.tar
 *.env
