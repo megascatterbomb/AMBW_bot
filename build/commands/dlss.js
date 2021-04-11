@@ -21,6 +21,21 @@ const imageminJpegtran = require('imagemin-jpegtran');
 const imageminPngquant = require('imagemin-pngquant');
 let TestCommand = class TestCommand extends overcord_1.Command {
     async execute(message, client) {
+        // Check if a GPU is present. If not, we're likely running in a docker environment so we shouldnt execute.
+        let isDocker = false;
+        const si = require('systeminformation');
+        await si.graphics(function (data) {
+            let info = "";
+            data.controllers.forEach(function (controller) {
+                info += "\n" + controller.model; //+ " " + Math.round(controller.vram/1024).toString() + "GB";
+                // VRAM can't display above 4GB.
+            });
+            isDocker = info == "";
+        });
+        if (isDocker) {
+            message.channel.send("DLSS is disabled when running from a docker instance.");
+            return;
+        }
         let attachments = message.attachments;
         if (attachments.size == 0) {
             message.channel.send("You must attach a single image to use this function (set the caption to a.dlss <scale>)");
