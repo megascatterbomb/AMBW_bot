@@ -18,9 +18,27 @@ let TestCommand = class TestCommand extends overcord_1.Command {
                 + data.physicalCores + "C/" + data.cores + "T");
             message.channel.send(info);
         });
+        await si.memLayout(function (data) {
+            let info = "";
+            info += "RAM Information:";
+            data.forEach(e => {
+                if (e.bank === "") {
+                    return;
+                }
+                info += ('\n' + e.bank + ": " + Math.round((e.size / 1024) / 1024) + " MB " + e.formFactor + " " + (e.clockSpeed * 2) + " MHz");
+            });
+            message.channel.send(info);
+        });
+        await si.mem(function (data) {
+            let info = (Math.round((data.total / 1024) / 1024) + " MB total (" + Math.round((data.free / 1024) / 1024) + " MB free)");
+            message.channel.send(info);
+        });
         await si.graphics(function (data) {
             let info = "";
             info += ('GPU Information:');
+            if (data.controllers.length == 0) {
+                info += "\nNot available (Likely running in Docker container)";
+            }
             data.controllers.forEach(function (controller) {
                 info += "\n" + controller.model; //+ " " + Math.round(controller.vram/1024).toString() + "GB";
                 // VRAM can't display above 4GB.
